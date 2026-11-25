@@ -1,4 +1,5 @@
-"""Модуль для синтаксического анализа пользовательского языка конфигурации."""
+"""Модуль синтаксического анализа учебного конфигурационного языка.
+"""
 from lark import Lark
 
 GRAMMAR = r"""
@@ -20,17 +21,15 @@ COMMENT_MULTI: /#\|[\s\S]*?\|#/
 %ignore COMMENT_MULTI
 """
 
-
 def get_parser():
-    """Инициализировать и вернуть парсер Lark."""
+    """Создать и вернуть синтаксический анализатор Lark."""
     return Lark(
         GRAMMAR,
         parser="earley",
-        propagate_positions=True
+        propagate_positions=True,
+        maybe_placeholders=False,
     )
 
-
 def parse_config(text):
-    """Разобрать входной текст в синтаксическое дерево Lark."""
-    parser = get_parser()
-    return parser.parse(text)
+    """Разобрать текст конфигурации и вернуть дерево разбора."""
+    return get_parser().parse(text)
