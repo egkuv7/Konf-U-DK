@@ -1,6 +1,6 @@
-"""Модуль для оценки синтаксического дерева и разрешения констант."""
-from lark import Tree, Token
+"""Модуль вычисления дерева разбора и констант этапа трансляции."""
 
+from lark import Token, Tree
 
 def evaluate_tree(tree, context):
     """Вычислить дерево разбора и вернуть список значений."""
@@ -12,30 +12,27 @@ def evaluate_tree(tree, context):
             results.append(eval_expr(child, context))
     return results
 
-
 def eval_def(node, context):
     """Обработать объявление константы и пополнить контекст."""
     name = str(node.children[-2])
     context[name] = eval_expr(node.children[-1], context)
 
 def eval_expr(node, context):
-    """Вычислить значение узла выражения."""
+    """Вычислить узел дерева или токен значения."""
     if isinstance(node, Token):
         return eval_token(node)
     return eval_node(node, context)
 
-
 def eval_token(token):
-    """Преобразовать токен Lark в примитив Python."""
+    """Преобразовать токен Lark в значение языка Python."""
     if token.type == "NUMBER":
         return int(token)
     if token.type == "ESCAPED_STRING":
         return str(token)[1:-1]
     return str(token)
 
-
 def eval_node(node, context):
-    """Оценить сложный узел дерева Lark."""
+    """Вычислить составной узел дерева разбора."""
     if node.data == "var_ref":
         return resolve_var(node, context)
     if node.data == "dict":
@@ -44,14 +41,12 @@ def eval_node(node, context):
         return eval_array(node, context)
     return None
 
-
 def resolve_var(node, context):
-    """Разрешить ссылку на переменную из контекста."""
+    """Найти значение константы в контексте по её имени."""
     name = str(node.children[0])
     if name not in context:
         raise ValueError(f"Undefined variable: {name}")
     return context[name]
-
 
 def eval_dict(node, context):
     """Вычислить словарь в виде отображения имён на значения."""
@@ -61,7 +56,6 @@ def eval_dict(node, context):
         result[key] = eval_expr(item.children[-1], context)
     return result
 
-
 def eval_array(node, context):
-    """Оценить узел массива."""
+    """Вычислить массив в виде списка значений."""
     return [eval_expr(child, context) for child in node.children]
