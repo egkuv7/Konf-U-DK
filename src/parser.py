@@ -3,14 +3,12 @@ from lark import Lark
 
 GRAMMAR = r"""
 start: (def_stmt | expr)*
-def_stmt: "(" DEF NAME expr ")" ";"
-expr: dict | array | string | NUMBER | var_ref
+def_stmt: "(" "def" NAME expr ")" ";"
+?expr: dict | array | ESCAPED_STRING | NUMBER | var_ref
 dict: "[" (dict_item ("," dict_item)*)? "]"
 dict_item: NAME "=>" expr
 array: "(" (expr ("," expr)*)? ")"
-string: ESCAPED_STRING
 var_ref: "?{" NAME "}"
-DEF: "def"
 NAME: /[_A-Z][_a-zA-Z0-9]*/
 NUMBER: /\d+/
 COMMENT_SINGLE: /--[^\n]*/
