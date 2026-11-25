@@ -3,23 +3,20 @@ from lark import Tree, Token
 
 
 def evaluate_tree(tree, context):
-    """Оценить синтаксическое дерево и вернуть список результатов."""
+    """Вычислить дерево разбора и вернуть список значений."""
     results = []
     for child in tree.children:
-        if child.data == "def_stmt":
+        if isinstance(child, Tree) and child.data == "def_stmt":
             eval_def(child, context)
         else:
-            val = eval_expr(child, context)
-            results.append(val)
+            results.append(eval_expr(child, context))
     return results
 
 
 def eval_def(node, context):
-    """Оценить оператор определения и обновить контекст."""
-    name = str(node.children[0])
-    value = eval_expr(node.children[1], context)
-    context[name] = value
-
+    """Обработать объявление константы и пополнить контекст."""
+    name = str(node.children[-2])
+    context[name] = eval_expr(node.children[-1], context)
 
 def eval_expr(node, context):
     """Вычислить значение узла выражения."""
@@ -57,12 +54,11 @@ def resolve_var(node, context):
 
 
 def eval_dict(node, context):
-    """Оценить узел словаря."""
+    """Вычислить словарь в виде отображения имён на значения."""
     result = {}
     for item in node.children:
-        key = str(item.children[0])
-        val = eval_expr(item.children[1], context)
-        result[key] = val
+        key = str(item.children[-2])
+        result[key] = eval_expr(item.children[-1], context)
     return result
 
 
