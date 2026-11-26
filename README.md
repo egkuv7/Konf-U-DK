@@ -68,7 +68,6 @@
 ### Windows, cmd.exe
 
 ```bat
-cd /d C:\path\to\config-translator
 chcp 65001
 py -3 -m pip install -r requirements.txt
 py -3 -m src.cli -f examples\db_config.cfg
@@ -77,6 +76,14 @@ py -3 -m unittest discover tests -v
 
 ```bat
 py -3 -X utf8 -m src.cli -f examples\db_config.cfg > out.xml
+```
+
+Запуск через скрипт (`run.bat`):
+```bat
+run.bat
+run.bat examples\db_config.cfg
+run.bat examples\ui_theme.cfg
+run.bat examples\game_stats.cfg
 ```
 
 Незабуференный вывод при передаче в конвейер:
@@ -217,17 +224,32 @@ python3 -m unittest discover tests -v
 </config>
 ```
 
-### Сообщение об ошибке
+### Сообщения об ошибках
+
+Отсутствующий входной файл:
 
 ```bat
 py -3 -m src.cli -f bad.cfg
 ```
 
 ```text
-Error: No terminal matches 'b' in current parser context.
-At line 1 col 2:
+Error: [Errno 2] No such file or directory: 'bad.cfg'
+```
+
+Синтаксическая ошибка (файл `bad.cfg` содержит `[bg => 1]`):
+
+```bat
+py -3 -m src.cli -f bad.cfg
+```
+
+```text
+Error: No terminal matches 'b' in the current parser context, at line 1 col 2
+
 [bg => 1]
  ^
+Expected one of:
+        * RSQB
+        * NAME
 ```
 -------------------------------------------------
 2026
