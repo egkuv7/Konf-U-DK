@@ -146,6 +146,23 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(root.find("entry/PORT").text, "5432")
         self.assertEqual(root.find("entry/HOST").text, "localhost")
 
+    def test_indented_output(self):
+        """Вложенные элементы выводятся на отдельных строках."""
+        xml = generate_xml([{"A": 1}])
+        expected = (
+            "<config>\n"
+            "  <entry>\n"
+            "    <A>1</A>\n"
+            "  </entry>\n"
+            "</config>"
+        )
+        self.assertEqual(xml, expected)
+
+    def test_leaf_text_not_padded(self):
+        """Отступы не изменяют текст листовых элементов."""
+        root = build_root([{"A": 1}])
+        self.assertEqual(root.find("entry/A").text, "1")
+
 
 if __name__ == "__main__":
     unittest.main()
