@@ -7,6 +7,7 @@ def generate_xml(data):
     root = ET.Element("config")
     for item in data:
         build_element(root, "entry", item)
+    ET.indent(root, space="  ")
     return ET.tostring(
         root,
         encoding="unicode",
